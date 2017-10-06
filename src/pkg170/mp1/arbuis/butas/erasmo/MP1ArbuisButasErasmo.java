@@ -16,30 +16,26 @@ import java.util.ArrayList;
  */
 public class MP1ArbuisButasErasmo {
 
-    private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\TRIAL.txt";
-    private static Tile[][] maze;
+    private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\bigMaze.lay.txt";
     
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
         
         maze.single_goal_manhattan();
-        
     }
-    
 }
 
 class Maze{
     Tile[][] maze;
     int start_row = 0, start_col = 0, end_row = 0, end_col = 0;
     Tile start = null;
-    ArrayList<Tile> goal =new ArrayList();
+    ArrayList<Tile> goal = new ArrayList();
     
     Maze(String path){
         BufferedReader br = null;
         FileReader fr = null;
         String line;
         ArrayList<Tile[]> temp_maze = new ArrayList();
-//        int manhattan_dist = 0, straight_dist = 0;
         
         try {
             fr = new FileReader(path);
@@ -90,14 +86,14 @@ class Maze{
         open_list.add(new OpenListEntry(start, 0, start.get_manhattan_dist(goal.get(0)), start.get_manhattan_dist(goal.get(0))));
         current = open_list.remove(0);
         
-        while(!current.equals(goal.get(0))){
+        while(!current.square.equals(goal.get(0))) {
             System.out.println(current.square.x + "," + current.square.y + " " + current.g + " " + current.h + " " + current.fn);
             closed_list.add(current.square);
             
             Tile currSq = current.square;
             
             //upper left
-            if(currSq.x-1 >= 0 && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y-1]) && maze[currSq.x-1][currSq.y-1].type == ' '){
+            if(currSq.x-1 >= 0 && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y-1]) && maze[currSq.x-1][currSq.y-1].type != '%') {
                 Tile upperLeft = maze[currSq.x-1][currSq.y-1];
                 OpenListEntry dup = this.searchOpenList(open_list, upperLeft);
                 int g = current.g + 1;
@@ -117,7 +113,7 @@ class Maze{
             }
             
             //upper mid
-            if(currSq.x-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y]) && maze[currSq.x-1][currSq.y].type == ' '){
+            if(currSq.x-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y]) && maze[currSq.x-1][currSq.y].type != '%') {
                 Tile upperMid = maze[currSq.x-1][currSq.y];
                 OpenListEntry dup = this.searchOpenList(open_list, upperMid);
                 int g = current.g + 1;
@@ -137,7 +133,7 @@ class Maze{
             }
             
             //upper right
-            if(currSq.x-1 >= 0 && currSq.y+1 < maze[currSq.x-1].length && !closed_list.contains(maze[currSq.x-1][currSq.y+1]) && maze[currSq.x-1][currSq.y+1].type == ' '){
+            if(currSq.x-1 >= 0 && currSq.y+1 < maze[currSq.x-1].length && !closed_list.contains(maze[currSq.x-1][currSq.y+1]) && maze[currSq.x-1][currSq.y+1].type != '%') {
                 Tile upperRight = maze[currSq.x-1][currSq.y+1];
                 OpenListEntry dup = this.searchOpenList(open_list, upperRight);
                 int g = current.g + 1;
@@ -157,7 +153,7 @@ class Maze{
             }
             
             //mid left
-            if(currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x][currSq.y-1]) && maze[currSq.x][currSq.y-1].type == ' '){
+            if(currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x][currSq.y-1]) && maze[currSq.x][currSq.y-1].type != '%') {
                 Tile midLeft = maze[currSq.x][currSq.y-1];
                 OpenListEntry dup = this.searchOpenList(open_list, midLeft);
                 int g = current.g + 1;
@@ -177,7 +173,7 @@ class Maze{
             }
             
             //mid right
-            if(currSq.y+1 < maze[currSq.x].length && !closed_list.contains(maze[currSq.x][currSq.y+1]) && maze[currSq.x][currSq.y+1].type == ' '){
+            if(currSq.y+1 < maze[currSq.x].length && !closed_list.contains(maze[currSq.x][currSq.y+1]) && maze[currSq.x][currSq.y+1].type != '%') {
                 Tile midRight = maze[currSq.x][currSq.y+1];
                 OpenListEntry dup = this.searchOpenList(open_list, midRight);
                 int g = current.g + 1;
@@ -197,7 +193,7 @@ class Maze{
             }
             
             //lower left
-            if(currSq.x+1 < maze.length && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x+1][currSq.y-1]) && maze[currSq.x+1][currSq.y-1].type == ' '){
+            if(currSq.x+1 < maze.length && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x+1][currSq.y-1]) && maze[currSq.x+1][currSq.y-1].type != '%') {
                 Tile lowerLeft = maze[currSq.x+1][currSq.y-1];
                 OpenListEntry dup = this.searchOpenList(open_list, lowerLeft);
                 int g = current.g + 1;
@@ -217,7 +213,7 @@ class Maze{
             }
             
             //lower mid
-            if(currSq.x+1 < maze.length && !closed_list.contains(maze[currSq.x+1][currSq.y]) && maze[currSq.x+1][currSq.y].type == ' '){
+            if(currSq.x+1 < maze.length && !closed_list.contains(maze[currSq.x+1][currSq.y]) && maze[currSq.x+1][currSq.y].type != '%') {
                 Tile lowerMid = maze[currSq.x+1][currSq.y];
                 OpenListEntry dup = this.searchOpenList(open_list, lowerMid);
                 int g = current.g + 1;
@@ -237,7 +233,7 @@ class Maze{
             }
             
              //lower right
-            if(currSq.x+1 < maze.length && currSq.y+1 < maze[currSq.x+1].length && !closed_list.contains(maze[currSq.x+1][currSq.y+1]) && maze[currSq.x+1][currSq.y+1].type == ' '){
+            if(currSq.x+1 < maze.length && currSq.y+1 < maze[currSq.x+1].length && !closed_list.contains(maze[currSq.x+1][currSq.y+1]) && maze[currSq.x+1][currSq.y+1].type != '%') {
                 Tile lowerRight = maze[currSq.x+1][currSq.y+1];
                 OpenListEntry dup = this.searchOpenList(open_list, lowerRight);
                 int g = current.g + 1;
@@ -255,16 +251,15 @@ class Maze{
                     }
                 }
             }
-      
+
+//            System.out.println(open_list);
+
             current = open_list.remove(0);
         }
-        
-//        for(int i = 0; i < open_list.size(); i++){
-//            System.out.println(open_list.get(i).square.x + "," + open_list.get(i).square.y + "  " + open_list.get(i).g + " " + open_list.get(i).h + " " + open_list.get(i).fn);
-//        }
+        closed_list.add(current.square);
     }
     
-    static OpenListEntry searchOpenList(ArrayList<OpenListEntry> arr, Tile tile){
+    static OpenListEntry searchOpenList(ArrayList<OpenListEntry> arr, Tile tile) {
         for(int i = 0; i < arr.size(); i++){
             if(arr.get(i).square.equals(tile)){
                 return arr.get(i);
@@ -274,7 +269,7 @@ class Maze{
         return null;
     }
     
-    static ArrayList<OpenListEntry> addOpenListEntry(ArrayList<OpenListEntry> open_list, OpenListEntry newEntry){
+    static ArrayList<OpenListEntry> addOpenListEntry(ArrayList<OpenListEntry> open_list, OpenListEntry newEntry) {
         if(open_list.isEmpty()){
             open_list.add(newEntry);
             return open_list;
@@ -296,51 +291,59 @@ class Maze{
                     }
                 }
             }
-        }  
+        }
         open_list.add(newEntry);
         return open_list;
     }
 }
 
-class Tile{
+class Tile {
     int x;
     int y;
     char type;
     
-    Tile(int x, int y, char type){
+    Tile(int x, int y, char type) {
         this.x = x;
         this.y = y;
         this.type = type;
     } 
     
-    int get_manhattan_dist(Tile goal){
+    int get_manhattan_dist(Tile goal) {
          return Math.abs(this.x - goal.x) + Math.abs(this.y - goal.y);
     }
     
-    int get_straight_dist(Tile goal){
+    int get_straight_dist(Tile goal) {
         return Math.max(Math.abs(this.x - goal.x), Math.abs(this.y - goal.y));
+    }
+
+    public String toString() { 
+        return "(" + this.x + "," + this.y + ")";
     }
 }
 
-class OpenListEntry{
+class OpenListEntry {
     Tile square;
     int g;
     int h;
     int fn;
    
-    OpenListEntry(Tile t, int g, int h, int fn){
+    OpenListEntry(Tile t, int g, int h, int fn) {
         this.square = t;
         this.g = g;
         this.h = h;
         this.fn = fn;
     }
+
+    public String toString() { 
+        return "(" + this.square + " = " + "g: " + this.g + ", h: " + this.h + ", fn: " + this.fn + ")";
+    }
 }
 
-class ParentListEntry{
+class ParentListEntry {
     Tile square;
     Tile parent;
     
-    ParentListEntry(Tile t, Tile p){
+    ParentListEntry(Tile t, Tile p) {
         this.square = t;
         this.parent = p;
     }
