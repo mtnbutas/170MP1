@@ -8,6 +8,7 @@ package pkg170.mp1.arbuis.butas.erasmo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
@@ -17,10 +18,11 @@ import java.util.ArrayList;
 public class MP1ArbuisButasErasmo {
 
     private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\smallMaze.lay.txt";
-    
+    // private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\smallMaze.lay.txt";
+
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
-        
+       
         maze.single_goal(false);
     }
 }
@@ -305,22 +307,32 @@ class Maze{
 //         System.out.println(closed_list);
 
         tracePath(closed_list.get(closed_list.size()-1), parent_list);
-        System.out.println();
-        for(int j = 0; j < this.maze.length; j++){
-            for(int k = 0; k < this.maze[j].length; k++){
-                System.out.print(this.maze[j][k].type);
+        // System.out.println();
+        PrintWriter writer = null;
+        
+        try{
+            writer = new PrintWriter("solution.txt", "UTF-8");
+            for(int j = 0; j < this.maze.length; j++){
+                for(int k = 0; k < this.maze[j].length; k++){
+                    writer.print(this.maze[j][k].type);
+                }
+                writer.println();
             }
-            System.out.println();
+            
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally{
+            writer.close();
         }
     }
 
     private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list){
-        System.out.println();
-        System.out.print(current.x+","+current.y);
+        // System.out.println();
+        // System.out.print(current.x+","+current.y);
         while(current!=null){
             for(int i = 0; i < parent_list.size(); i++){
                 if(current.equals(parent_list.get(i).square)){
-                    System.out.print(" -> "+current.x+","+current.y);
+                    // System.out.print(" -> "+current.x+","+current.y);
 
                     for(int j = 0; j < this.maze.length; j++){
                         for(int k = 0; k < this.maze[j].length; k++){
