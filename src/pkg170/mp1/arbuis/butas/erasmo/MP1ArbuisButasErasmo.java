@@ -16,12 +16,12 @@ import java.util.ArrayList;
  */
 public class MP1ArbuisButasErasmo {
 
-    private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\bigMaze.lay.txt";
+    private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\smallMaze.lay.txt";
     
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
         
-        maze.single_goal_manhattan();
+        maze.single_goal(false);
     }
 }
 
@@ -76,18 +76,22 @@ class Maze{
         }
     }
    
-    void single_goal_manhattan(){
+    void single_goal(boolean heuristics) {
         ArrayList<OpenListEntry> open_list = new ArrayList();
         ArrayList<Tile> closed_list = new ArrayList();
         ArrayList<ParentListEntry> parent_list = new ArrayList();
         OpenListEntry current = null;
         
         parent_list.add(new ParentListEntry(start, null));
-        open_list.add(new OpenListEntry(start, 0, start.get_manhattan_dist(goal.get(0)), start.get_manhattan_dist(goal.get(0))));
+        if(heuristics) {
+            open_list.add(new OpenListEntry(start, 0, start.get_manhattan_dist(goal.get(0)), start.get_manhattan_dist(goal.get(0))));
+        } else {
+            open_list.add(new OpenListEntry(start, 0, start.get_straight_dist(goal.get(0)), start.get_straight_dist(goal.get(0))));
+        }
         current = open_list.remove(0);
         
         while(!current.square.equals(goal.get(0))) {
-            System.out.println(current.square.x + "," + current.square.y + " " + current.g + " " + current.h + " " + current.fn);
+            // System.out.println(current.square.x + "," + current.square.y + " " + current.g + " " + current.h + " " + current.fn);
             closed_list.add(current.square);
             
             Tile currSq = current.square;
@@ -97,7 +101,12 @@ class Maze{
                 Tile upperLeft = maze[currSq.x-1][currSq.y-1];
                 OpenListEntry dup = this.searchOpenList(open_list, upperLeft);
                 int g = current.g + 1;
-                int h = upperLeft.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = upperLeft.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = upperLeft.get_straight_dist(goal.get(0));
+                }
                 int fn = g+h;
                 
                 if(dup == null){
@@ -117,7 +126,13 @@ class Maze{
                 Tile upperMid = maze[currSq.x-1][currSq.y];
                 OpenListEntry dup = this.searchOpenList(open_list, upperMid);
                 int g = current.g + 1;
-                int h = upperMid.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = upperMid.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = upperMid.get_straight_dist(goal.get(0));
+                }
+                
                 int fn = g+h;
                 
                 if(dup == null){
@@ -137,7 +152,12 @@ class Maze{
                 Tile upperRight = maze[currSq.x-1][currSq.y+1];
                 OpenListEntry dup = this.searchOpenList(open_list, upperRight);
                 int g = current.g + 1;
-                int h = upperRight.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = upperRight.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = upperRight.get_straight_dist(goal.get(0));
+                }
                 int fn = g+h;
                 
                 if(dup == null){
@@ -157,7 +177,12 @@ class Maze{
                 Tile midLeft = maze[currSq.x][currSq.y-1];
                 OpenListEntry dup = this.searchOpenList(open_list, midLeft);
                 int g = current.g + 1;
-                int h = midLeft.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = midLeft.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = midLeft.get_straight_dist(goal.get(0));
+                }
                 int fn = g+h;
                 
                 if(dup == null){
@@ -177,7 +202,12 @@ class Maze{
                 Tile midRight = maze[currSq.x][currSq.y+1];
                 OpenListEntry dup = this.searchOpenList(open_list, midRight);
                 int g = current.g + 1;
-                int h = midRight.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = midRight.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = midRight.get_straight_dist(goal.get(0));
+                }
                 int fn = g+h;
                 
                 if(dup == null){
@@ -197,7 +227,12 @@ class Maze{
                 Tile lowerLeft = maze[currSq.x+1][currSq.y-1];
                 OpenListEntry dup = this.searchOpenList(open_list, lowerLeft);
                 int g = current.g + 1;
-                int h = lowerLeft.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = lowerLeft.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = lowerLeft.get_straight_dist(goal.get(0));
+                }
                 int fn = g+h;
                 
                 if(dup == null){
@@ -217,7 +252,12 @@ class Maze{
                 Tile lowerMid = maze[currSq.x+1][currSq.y];
                 OpenListEntry dup = this.searchOpenList(open_list, lowerMid);
                 int g = current.g + 1;
-                int h = lowerMid.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = lowerMid.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = lowerMid.get_straight_dist(goal.get(0));
+                }
                 int fn = g+h;
                 
                 if(dup == null){
@@ -237,7 +277,12 @@ class Maze{
                 Tile lowerRight = maze[currSq.x+1][currSq.y+1];
                 OpenListEntry dup = this.searchOpenList(open_list, lowerRight);
                 int g = current.g + 1;
-                int h = lowerRight.get_manhattan_dist(goal.get(0));
+                int h;
+                if(heuristics) {
+                    h = lowerRight.get_manhattan_dist(goal.get(0));
+                } else {
+                    h = lowerRight.get_straight_dist(goal.get(0));
+                }
                 int fn = g+h;
                 
                 if(dup == null){
@@ -252,11 +297,44 @@ class Maze{
                 }
             }
 
-//            System.out.println(open_list);
+            // System.out.println(open_list);
 
             current = open_list.remove(0);
         }
         closed_list.add(current.square);
+//         System.out.println(closed_list);
+
+        tracePath(closed_list.get(closed_list.size()-1), parent_list);
+        System.out.println();
+        for(int j = 0; j < this.maze.length; j++){
+            for(int k = 0; k < this.maze[j].length; k++){
+                System.out.print(this.maze[j][k].type);
+            }
+            System.out.println();
+        }
+    }
+
+    private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list){
+        System.out.println();
+        System.out.print(current.x+","+current.y);
+        while(current!=null){
+            for(int i = 0; i < parent_list.size(); i++){
+                if(current.equals(parent_list.get(i).square)){
+                    System.out.print(" -> "+current.x+","+current.y);
+
+                    for(int j = 0; j < this.maze.length; j++){
+                        for(int k = 0; k < this.maze[j].length; k++){
+                            if( current.equals(this.maze[j][k])){
+                                this.maze[j][k].type = '.';
+                            }
+                        }
+                    }
+
+                    current = parent_list.get(i).parent;
+                    break;
+                }
+            }
+        }
     }
     
     static OpenListEntry searchOpenList(ArrayList<OpenListEntry> arr, Tile tile) {
