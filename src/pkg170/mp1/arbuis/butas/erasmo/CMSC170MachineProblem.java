@@ -78,7 +78,7 @@ class Maze {
         }
     }
 
-    private void doSomeProcess(Tile child, OpenListEntry current, ArrayList<OpenListEntry> open_list, ArrayList<ParentListEntry> parent_list, boolean heuristics) {
+    private void processNextTile(Tile child, OpenListEntry current, ArrayList<OpenListEntry> open_list, ArrayList<ParentListEntry> parent_list, boolean heuristics) {
         OpenListEntry dup = this.searchOpenList(open_list, child);
         int g = current.g + 1;
         int h;
@@ -124,42 +124,42 @@ class Maze {
             
             // upper left
             // if(currSq.x-1 >= 0 && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y-1]) && maze[currSq.x-1][currSq.y-1].type != '%') {
-            //     doSomeProcess(maze[currSq.x-1][currSq.y-1], current, open_list, parent_list, heuristics);
+            //     processNextTile(maze[currSq.x-1][currSq.y-1], current, open_list, parent_list, heuristics);
             // }
             
             //upper mid
             if(currSq.x-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y]) && maze[currSq.x-1][currSq.y].type != '%') {
-                doSomeProcess(maze[currSq.x-1][currSq.y], current, open_list, parent_list, heuristics);
+                processNextTile(maze[currSq.x-1][currSq.y], current, open_list, parent_list, heuristics);
             }
             
             // upper right
             // if(currSq.x-1 >= 0 && currSq.y+1 < maze[currSq.x-1].length && !closed_list.contains(maze[currSq.x-1][currSq.y+1]) && maze[currSq.x-1][currSq.y+1].type != '%') {
-            //     doSomeProcess(maze[currSq.x-1][currSq.y+1], current, open_list, parent_list, heuristics);
+            //     processNextTile(maze[currSq.x-1][currSq.y+1], current, open_list, parent_list, heuristics);
             // }
             
             //mid left
             if(currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x][currSq.y-1]) && maze[currSq.x][currSq.y-1].type != '%') {
-                doSomeProcess(maze[currSq.x][currSq.y-1], current, open_list, parent_list, heuristics);
+                processNextTile(maze[currSq.x][currSq.y-1], current, open_list, parent_list, heuristics);
             }
             
             //mid right
             if(currSq.y+1 < maze[currSq.x].length && !closed_list.contains(maze[currSq.x][currSq.y+1]) && maze[currSq.x][currSq.y+1].type != '%') {
-                doSomeProcess(maze[currSq.x][currSq.y+1], current, open_list, parent_list, heuristics);
+                processNextTile(maze[currSq.x][currSq.y+1], current, open_list, parent_list, heuristics);
             }
             
             // lower left
             // if(currSq.x+1 < maze.length && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x+1][currSq.y-1]) && maze[currSq.x+1][currSq.y-1].type != '%') {
-            //     doSomeProcess(maze[currSq.x+1][currSq.y-1], current, open_list, parent_list, heuristics);
+            //     processNextTile(maze[currSq.x+1][currSq.y-1], current, open_list, parent_list, heuristics);
             // }
             
             // lower mid
             if(currSq.x+1 < maze.length && !closed_list.contains(maze[currSq.x+1][currSq.y]) && maze[currSq.x+1][currSq.y].type != '%') {
-                doSomeProcess(maze[currSq.x+1][currSq.y], current, open_list, parent_list, heuristics);
+                processNextTile(maze[currSq.x+1][currSq.y], current, open_list, parent_list, heuristics);
             }
             
             // lower right
             // if(currSq.x+1 < maze.length && currSq.y+1 < maze[currSq.x+1].length && !closed_list.contains(maze[currSq.x+1][currSq.y+1]) && maze[currSq.x+1][currSq.y+1].type != '%') {
-            //     doSomeProcess(maze[currSq.x+1][currSq.y+1], current, open_list, parent_list, heuristics);
+            //     processNextTile(maze[currSq.x+1][currSq.y+1], current, open_list, parent_list, heuristics);
             // }
 
             current = open_list.remove(0);
