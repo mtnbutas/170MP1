@@ -16,14 +16,18 @@ import java.util.ArrayList;
  * @author TRISHA NICOLE
  */
 public class CMSC170MachineProblem {
-
-    private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\bigMaze.lay.txt";
-    // private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\smallMaze.lay.txt";
+    private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\trickySearch.lay.txt";
+//    private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\bigMaze.lay.txt";
+    // private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\smallMaze.lay.txt"; <- Celine
 
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
        
-        maze.single_goal(false);
+        
+        //false = straight line dist; true = manhattan dist
+//        maze.single_goal_driver(false);
+            maze.multiple_goal_driver(false);
+        
     }
 }
 
@@ -102,72 +106,12 @@ class Maze {
         }
     }
    
-    public void single_goal(boolean heuristics) {
-        ArrayList<OpenListEntry> open_list = new ArrayList();
+    public void single_goal_driver(boolean heuristics){
         ArrayList<Tile> closed_list = new ArrayList();
         ArrayList<ParentListEntry> parent_list = new ArrayList();
-        OpenListEntry current = null;
-        
         parent_list.add(new ParentListEntry(start, null));
-        if(heuristics) {
-            open_list.add(new OpenListEntry(start, 0, start.get_manhattan_dist(goal.get(0)), start.get_manhattan_dist(goal.get(0))));
-        } else {
-            open_list.add(new OpenListEntry(start, 0, start.get_straight_dist(goal.get(0)), start.get_straight_dist(goal.get(0))));
-        }
-        current = open_list.remove(0);
-        
-        while(!current.square.equals(goal.get(0))) {
-            // System.out.println(current.square.x + "," + current.square.y + " " + current.g + " " + current.h + " " + current.fn);
-            closed_list.add(current.square);
-            
-            Tile currSq = current.square;
-            
-            // upper left
-            // if(currSq.x-1 >= 0 && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y-1]) && maze[currSq.x-1][currSq.y-1].type != '%') {
-            //     processNextTile(maze[currSq.x-1][currSq.y-1], current, open_list, parent_list, heuristics);
-            // }
-            
-            //upper mid
-            if(currSq.x-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y]) && maze[currSq.x-1][currSq.y].type != '%') {
-                processNextTile(maze[currSq.x-1][currSq.y], current, open_list, parent_list, heuristics);
-            }
-            
-            // upper right
-            // if(currSq.x-1 >= 0 && currSq.y+1 < maze[currSq.x-1].length && !closed_list.contains(maze[currSq.x-1][currSq.y+1]) && maze[currSq.x-1][currSq.y+1].type != '%') {
-            //     processNextTile(maze[currSq.x-1][currSq.y+1], current, open_list, parent_list, heuristics);
-            // }
-            
-            //mid left
-            if(currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x][currSq.y-1]) && maze[currSq.x][currSq.y-1].type != '%') {
-                processNextTile(maze[currSq.x][currSq.y-1], current, open_list, parent_list, heuristics);
-            }
-            
-            //mid right
-            if(currSq.y+1 < maze[currSq.x].length && !closed_list.contains(maze[currSq.x][currSq.y+1]) && maze[currSq.x][currSq.y+1].type != '%') {
-                processNextTile(maze[currSq.x][currSq.y+1], current, open_list, parent_list, heuristics);
-            }
-            
-            // lower left
-            // if(currSq.x+1 < maze.length && currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x+1][currSq.y-1]) && maze[currSq.x+1][currSq.y-1].type != '%') {
-            //     processNextTile(maze[currSq.x+1][currSq.y-1], current, open_list, parent_list, heuristics);
-            // }
-            
-            // lower mid
-            if(currSq.x+1 < maze.length && !closed_list.contains(maze[currSq.x+1][currSq.y]) && maze[currSq.x+1][currSq.y].type != '%') {
-                processNextTile(maze[currSq.x+1][currSq.y], current, open_list, parent_list, heuristics);
-            }
-            
-            // lower right
-            // if(currSq.x+1 < maze.length && currSq.y+1 < maze[currSq.x+1].length && !closed_list.contains(maze[currSq.x+1][currSq.y+1]) && maze[currSq.x+1][currSq.y+1].type != '%') {
-            //     processNextTile(maze[currSq.x+1][currSq.y+1], current, open_list, parent_list, heuristics);
-            // }
-
-            current = open_list.remove(0);
-        }
-        closed_list.add(current.square);
-
-        tracePath(closed_list.get(closed_list.size()-1), parent_list);
-
+        single_goal(heuristics, new ArrayList(), closed_list, parent_list, null);
+        tracePath(closed_list.get(closed_list.size()-1), parent_list, null);
         PrintWriter writer = null;
         try {
             writer = new PrintWriter("solution.txt", "UTF-8");
@@ -184,23 +128,150 @@ class Maze {
             writer.close();
         }
     }
+    
+    public void single_goal(boolean heuristics, ArrayList<OpenListEntry> open_list,  ArrayList<Tile> closed_list, ArrayList<ParentListEntry> parent_list,  OpenListEntry current) {
+        if(heuristics) {
+            open_list.add(new OpenListEntry(start, 0, start.get_manhattan_dist(goal.get(0)), start.get_manhattan_dist(goal.get(0))));
+        } else {
+            open_list.add(new OpenListEntry(start, 0, start.get_straight_dist(goal.get(0)), start.get_straight_dist(goal.get(0))));
+        }
+        current = open_list.remove(0);
+        
+        while(!current.square.equals(goal.get(0))) {
+            // System.out.println(current.square.x + "," + current.square.y + " " + current.g + " " + current.h + " " + current.fn);
+            closed_list.add(current.square);
+            
+            Tile currSq = current.square;
+            
+            //upper mid
+            if(currSq.x-1 >= 0 && !closed_list.contains(maze[currSq.x-1][currSq.y]) && maze[currSq.x-1][currSq.y].type != '%') {
+                processNextTile(maze[currSq.x-1][currSq.y], current, open_list, parent_list, heuristics);
+            }
 
-    private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list) {
-        while(current!=null){
-            for(int i = 0; i < parent_list.size(); i++){
-                if(current.equals(parent_list.get(i).square)) {
-                    // System.out.print(" -> "+current.x+","+current.y);
+            //mid left
+            if(currSq.y-1 >= 0 && !closed_list.contains(maze[currSq.x][currSq.y-1]) && maze[currSq.x][currSq.y-1].type != '%') {
+                processNextTile(maze[currSq.x][currSq.y-1], current, open_list, parent_list, heuristics);
+            }
+            
+            //mid right
+            if(currSq.y+1 < maze[currSq.x].length && !closed_list.contains(maze[currSq.x][currSq.y+1]) && maze[currSq.x][currSq.y+1].type != '%') {
+                processNextTile(maze[currSq.x][currSq.y+1], current, open_list, parent_list, heuristics);
+            }
+           
+            // lower mid
+            if(currSq.x+1 < maze.length && !closed_list.contains(maze[currSq.x+1][currSq.y]) && maze[currSq.x+1][currSq.y].type != '%') {
+                processNextTile(maze[currSq.x+1][currSq.y], current, open_list, parent_list, heuristics);
+            }
+           
+            current = open_list.remove(0);
+        }
+        
+        closed_list.add(current.square);
+    }
 
-                    for(int j = 0; j < this.maze.length; j++) {
-                        for(int k = 0; k < this.maze[j].length; k++) {
-                            if(current.equals(this.maze[j][k])) {
-                                this.maze[j][k].type = '.';
+    public void multiple_goal_driver(boolean heuristics){
+        ArrayList<Tile> closed_list = new ArrayList();
+        ArrayList<ParentListEntry> parent_list = new ArrayList();
+        parent_list.add(new ParentListEntry(start, null));
+        ArrayList<Tile> ordered_goal = new ArrayList();
+        
+//        Tile nextStartPoint = null;
+       
+        while(!goal.isEmpty()){
+            closed_list = new ArrayList();
+            Tile closest = goal.get(0);
+            for(int i = 1; i < goal.size(); i++){
+                if(heuristics){
+                    if(start.get_manhattan_dist(goal.get(i)) < start.get_manhattan_dist(closest)){
+                        closest = goal.get(i);
+                    }
+                }
+                else{
+                    if(start.get_straight_dist(goal.get(i)) < start.get_straight_dist(closest)){
+                        closest = goal.get(i);
+                    }
+                }
+            }
+//            System.out.println(goal);
+            goal.remove(closest);
+            goal.add(0, closest);
+            
+            
+            single_goal(heuristics, new ArrayList(), closed_list, parent_list, null);
+            
+            
+            start = goal.remove(0);
+//            System.out.println(start);
+            ordered_goal.add(start);
+        }
+       System.out.println(ordered_goal);
+       tracePath(start, parent_list, ordered_goal);
+//       System.out.println(goal);
+
+        for(int i = 0; i < parent_list.size(); i++){
+            System.out.println(parent_list.get(i).square+" "+parent_list.get(i).parent);
+        }
+        
+       for(int i = 0; i < this.maze.length; i++){
+//           System.out.println(ordered_goal.get(i));  
+           for(int j = 0; j < this.maze[i].length; j++){
+               System.out.print(this.maze[i][j].type);
+           }
+           System.out.println();
+       }
+       
+    }
+    
+    
+    private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list, ArrayList<Tile> ord_goal) {
+        
+        if(ord_goal==null){
+            while(current!=null){
+                for(int i = 0; i < parent_list.size(); i++){
+                    if(current.equals(parent_list.get(i).square)) {
+                        // System.out.print(" -> "+current.x+","+current.y);
+
+                        for(int j = 0; j < this.maze.length; j++) {
+                            for(int k = 0; k < this.maze[j].length; k++) {
+                                if(current.equals(this.maze[j][k])) {
+                                    this.maze[j][k].type = '.';
+                                }
                             }
                         }
-                    }
 
-                    current = parent_list.get(i).parent;
-                    break;
+                        current = parent_list.get(i).parent;
+                        break;
+                    }
+                }
+            }
+        } else{
+            boolean flag = false;
+            System.out.println(ord_goal);
+            while(current!=null){
+                System.out.println("current: "+current);
+                for(int i = parent_list.size()-1; i >= 0; i--){
+                    
+                    if(current.equals(parent_list.get(i).square)) {
+                        // System.out.print(" -> "+current.x+","+current.y);
+                        for(int j = 0; j < this.maze.length; j++) {
+                            for(int k = 0; k < this.maze[j].length; k++) {
+                                flag = false;
+                                if(current.equals(this.maze[j][k])) {
+                                        this.maze[j][k].type = '.';
+                                }
+                            }
+                        }
+                        current = parent_list.get(i).parent;
+                        break;
+                    }
+                }
+            }
+            
+            for(int l = 0; l < ord_goal.size(); l++){
+                if(l > 8){
+                    ord_goal.get(l).type = (char)((l+1)+55);
+                } else{
+                    ord_goal.get(l).type = (char)((l+1)+'0');
                 }
             }
         }
