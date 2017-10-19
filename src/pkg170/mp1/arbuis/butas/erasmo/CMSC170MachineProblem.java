@@ -16,9 +16,9 @@ import java.util.ArrayList;
  * @author TRISHA NICOLE
  */
 public class CMSC170MachineProblem {
-    private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\trickySearch.lay.txt";
+//    private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\trickySearch.lay.txt";
 //    private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\bigMaze.lay.txt";
-    // private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\smallMaze.lay.txt"; <- Celine
+     private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\trickySearch.lay.txt"; //<- Celine
 
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
@@ -26,7 +26,7 @@ public class CMSC170MachineProblem {
         
         //false = straight line dist; true = manhattan dist
 //        maze.single_goal_driver(false);
-            maze.multiple_goal_driver(false);
+            maze.multiple_goal_driver(true);
         
     }
 }
@@ -86,6 +86,8 @@ class Maze {
         OpenListEntry dup = this.searchOpenList(open_list, child);
         int g = current.g + 1;
         int h;
+        Tile removed;
+
         if(heuristics) {
             h = child.get_manhattan_dist(goal.get(0));
         } else {
@@ -111,7 +113,8 @@ class Maze {
         ArrayList<ParentListEntry> parent_list = new ArrayList();
         parent_list.add(new ParentListEntry(start, null));
         single_goal(heuristics, new ArrayList(), closed_list, parent_list, null);
-        tracePath(closed_list.get(closed_list.size()-1), parent_list, null);
+        // tracePath(closed_list.get(closed_list.size()-1), parent_list, null);
+        System.out.println("SINGLE");
         PrintWriter writer = null;
         try {
             writer = new PrintWriter("solution.txt", "UTF-8");
@@ -165,17 +168,30 @@ class Maze {
            
             current = open_list.remove(0);
         }
-        
         closed_list.add(current.square);
+        
+        tracePath(closed_list.get(closed_list.size()-1), parent_list);
+        System.out.println("");
+        for(int i = 0; i < this.maze.length; i++){
+//           System.out.println(ordered_goal.get(i));  
+           for(int j = 0; j < this.maze[i].length; j++){
+               System.out.print(this.maze[i][j].type);
+           }
+           System.out.println();
+        }
+        
     }
 
+    /**
+            MULTIPLE GOALS
+    **/
     public void multiple_goal_driver(boolean heuristics){
         ArrayList<Tile> closed_list = new ArrayList();
         ArrayList<ParentListEntry> parent_list = new ArrayList();
         parent_list.add(new ParentListEntry(start, null));
         ArrayList<Tile> ordered_goal = new ArrayList();
-        
-//        Tile nextStartPoint = null;
+        System.out.println("MULTIPLE");
+       // Tile nextStartPoint = null;
        
         while(!goal.isEmpty()){
             closed_list = new ArrayList();
@@ -192,89 +208,64 @@ class Maze {
                     }
                 }
             }
-//            System.out.println(goal);
+           // System.out.println(goal);
             goal.remove(closest);
             goal.add(0, closest);
             
             
             single_goal(heuristics, new ArrayList(), closed_list, parent_list, null);
-            
-            
             start = goal.remove(0);
-//            System.out.println(start);
+           // System.out.println(start);
             ordered_goal.add(start);
         }
        System.out.println(ordered_goal);
-       tracePath(start, parent_list, ordered_goal);
-//       System.out.println(goal);
+       // tracePath(start, parent_list, ordered_goal);
+      // System.out.println(goal);
 
         for(int i = 0; i < parent_list.size(); i++){
             System.out.println(parent_list.get(i).square+" "+parent_list.get(i).parent);
         }
+        for(int l = 0; l < ordered_goal.size(); l++){
+            if(l > 8){
+                ordered_goal.get(l).type = (char)((l+1)+55);
+            } else{
+                ordered_goal.get(l).type = (char)((l+1)+'0');
+            }
+        }
         
-       for(int i = 0; i < this.maze.length; i++){
+        for(int i = 0; i < this.maze.length; i++){
 //           System.out.println(ordered_goal.get(i));  
            for(int j = 0; j < this.maze[i].length; j++){
                System.out.print(this.maze[i][j].type);
            }
            System.out.println();
-       }
-       
+        }
+        
+        
     }
     
     
-    private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list, ArrayList<Tile> ord_goal) {
+    private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list) {
         
-        if(ord_goal==null){
-            while(current!=null){
-                for(int i = 0; i < parent_list.size(); i++){
-                    if(current.equals(parent_list.get(i).square)) {
-                        // System.out.print(" -> "+current.x+","+current.y);
+        while(current!=null){
+            for(int i = 0; i < parent_list.size(); i++){
+                if(current.equals(parent_list.get(i).square)) {
+                    // System.out.print(" -> "+current.x+","+current.y);
 
-                        for(int j = 0; j < this.maze.length; j++) {
-                            for(int k = 0; k < this.maze[j].length; k++) {
-                                if(current.equals(this.maze[j][k])) {
-                                    this.maze[j][k].type = '.';
-                                }
+                    for(int j = 0; j < this.maze.length; j++) {
+                        for(int k = 0; k < this.maze[j].length; k++) {
+                            if(current.equals(this.maze[j][k])) {
+                                this.maze[j][k].type = '.';
                             }
                         }
+                    }
 
-                        current = parent_list.get(i).parent;
-                        break;
-                    }
-                }
-            }
-        } else{
-            boolean flag = false;
-            System.out.println(ord_goal);
-            while(current!=null){
-                System.out.println("current: "+current);
-                for(int i = parent_list.size()-1; i >= 0; i--){
-                    
-                    if(current.equals(parent_list.get(i).square)) {
-                        // System.out.print(" -> "+current.x+","+current.y);
-                        for(int j = 0; j < this.maze.length; j++) {
-                            for(int k = 0; k < this.maze[j].length; k++) {
-                                flag = false;
-                                if(current.equals(this.maze[j][k])) {
-                                        this.maze[j][k].type = '.';
-                                }
-                            }
-                        }
-                        current = parent_list.get(i).parent;
-                        break;
-                    }
-                }
-            }
-            
-            for(int l = 0; l < ord_goal.size(); l++){
-                if(l > 8){
-                    ord_goal.get(l).type = (char)((l+1)+55);
-                } else{
-                    ord_goal.get(l).type = (char)((l+1)+'0');
+                    current = parent_list.get(i).parent;
+                    break;
                 }
             }
         }
+
     }
     
     private static OpenListEntry searchOpenList(ArrayList<OpenListEntry> arr, Tile tile) {
