@@ -16,16 +16,16 @@ import java.util.ArrayList;
  * @author TRISHA NICOLE
  */
 public class CMSC170MachineProblem {
-//    private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\trickySearch.lay.txt";
-//    private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\bigMaze.lay.txt";
-     private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\bigSearch.lay.txt"; //<- Celine
+    // private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\trickySearch.lay.txt";
+    // private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\trickySearch.lay.txt";
+    private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\bigSearch.lay.txt"; //<- Celine
 
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
        
         
-        //false = straight line dist; true = manhattan dist
-//        maze.single_goal_driver(false);
+        // false = straight line dist; true = manhattan dist
+        // maze.single_goal_driver(true);
         maze.multiple_goal_driver(true);
         
     }
@@ -113,14 +113,13 @@ class Maze {
         ArrayList<ParentListEntry> parent_list = new ArrayList();
         parent_list.add(new ParentListEntry(start, null));
         single_goal(heuristics, new ArrayList(), closed_list, parent_list, null);
-        // tracePath(closed_list.get(closed_list.size()-1), parent_list, null);
         System.out.println("SINGLE");
         PrintWriter writer = null;
         try {
             writer = new PrintWriter("solutionSingleGoal.txt", "UTF-8");
             for(int j = 0; j < this.maze.length; j++) {
                 for(int k = 0; k < this.maze[j].length; k++) {
-                    writer.print(this.maze[j][k].type);
+                    writer.print(this.maze[j][k].type + " ");
                 }
                 writer.println();
             }
@@ -209,28 +208,30 @@ class Maze {
         int temp = 0;
 
         for(int l = 0; l < ordered_goal.size(); l++){
-            if(l > 34 && l < 61){ // lower case alphabet
-                ordered_goal.get(l).type = (char)((l+1)+61);
-                // System.out.println(l+" "+(char)((l+1)+61));
-            } else if(l > 8 && l < 34){ // upper case alphabet
-                ordered_goal.get(l).type = (char)((l+1)+55);
-                // System.out.println(l+" "+(char)((l+1)+55));
-            } else{ // digits
-                if(l > 61){
-                    temp = 0;
-                } else{
-                    temp = l;
-                }
-                ordered_goal.get(l).type = (char)((temp+1)+'0');
-            }
+            ordered_goal.get(l).order = l+1;
         }
 
         PrintWriter writer = null;
+        int spacer = 1;
+        for(int l=10; (ordered_goal.size() + 1) / l > 0; l*=10) {
+            spacer ++;
+        }
         try {
             writer = new PrintWriter("solutionMultipleGoal.txt", "UTF-8");
             for(int j = 0; j < this.maze.length; j++) {
                 for(int k = 0; k < this.maze[j].length; k++) {
-                    writer.print(this.maze[j][k].type);
+                    if(this.maze[j][k].order == 0) {
+                        writer.print(this.maze[j][k].type);
+                        writer.print(new String(new char[spacer]).replace("\0", " "));
+                    }
+                    else {
+                        writer.print(this.maze[j][k].order);
+                        int ind_space = spacer;
+                        for(int l=10; this.maze[j][k].order / l > 0; l*=10) {
+                            ind_space --;
+                        }
+                        writer.print(new String(new char[ind_space]).replace("\0", " "));
+                    }
                 }
                 writer.println();
             }
@@ -240,23 +241,12 @@ class Maze {
         } finally {
             writer.close();
         }
-        
-        // for(int i = 0; i < this.maze.length; i++){
-        //    for(int j = 0; j < this.maze[i].length; j++){
-        //        System.out.print(this.maze[i][j].type);
-        //    }
-        //    System.out.println();
-        // }
-        
-        
     }
-    
     
     private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list) {
         while(current!=null){
             for(int i = 0; i < parent_list.size(); i++){
                 if(current.equals(parent_list.get(i).square)) {
-                    // System.out.print(" -> "+current.x+","+current.y);
                     for(int j = 0; j < this.maze.length; j++) {
                         for(int k = 0; k < this.maze[j].length; k++) {
                             if(current.equals(this.maze[j][k])) {
@@ -313,11 +303,13 @@ class Tile {
     int x;
     int y;
     char type;
+    int order;
     
     Tile(int x, int y, char type) {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.order = 0;
     } 
     
     int get_manhattan_dist(Tile goal) {
