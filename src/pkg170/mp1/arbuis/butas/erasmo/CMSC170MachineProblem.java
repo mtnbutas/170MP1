@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class CMSC170MachineProblem {
     // private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\trickySearch.lay.txt";
     // private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\trickySearch.lay.txt";
-    private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\bigSearch.lay.txt"; //<- Celine
+    private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\mediumSearch.lay.txt"; //<- Celine
 
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
@@ -26,7 +26,7 @@ public class CMSC170MachineProblem {
         
         // false = straight line dist; true = manhattan dist
         // maze.single_goal_driver(true);
-        maze.multiple_goal_driver(true);
+        maze.multiple_goal_driver(false);
         
     }
 }
@@ -95,9 +95,11 @@ class Maze {
         }
         
         int fn = g+h;
+
+        // System.out.println(fn);
         
         if(dup == null){
-            open_list = this.addOpenListEntry(open_list,new OpenListEntry(child, g, h, fn));
+            open_list = this.addOpenListEntry(open_list, new OpenListEntry(child, g, h, fn));
             parent_list.add(new ParentListEntry(child, current.square));
         }
         else{
@@ -140,22 +142,6 @@ class Maze {
         current = open_list.remove(0);
         
         while(!current.square.equals(goal.get(0))) {
-            Tile closest = goal.get(0);
-            for(int i = 1; i < goal.size(); i++){
-                if(heuristics){
-                    if(current.square.get_manhattan_dist(goal.get(i)) < current.square.get_manhattan_dist(closest)){
-                        closest = goal.get(i);
-                    }
-                }
-                else{
-                    if(current.square.get_straight_dist(goal.get(i)) < current.square.get_straight_dist(closest)){
-                        closest = goal.get(i);
-                    }
-                }
-            }
-            goal.remove(closest);
-            goal.add(0, closest);
-
             closed_list.add(current.square);
             
             Tile currSq = current.square;
@@ -180,11 +166,32 @@ class Maze {
                 processNextTile(maze[currSq.x+1][currSq.y], current, open_list, parent_list, heuristics);
             }
            
+            System.out.println(open_list.size());
             current = open_list.remove(0);
+
+            Tile closest = goal.get(0);
+            for(int i = 1; i < goal.size(); i++){
+                if(heuristics){
+                    if(current.square.get_manhattan_dist(goal.get(i)) < current.square.get_manhattan_dist(closest)){
+                        closest = goal.get(i);
+                    }
+                }
+                else{
+                    if(current.square.get_straight_dist(goal.get(i)) < current.square.get_straight_dist(closest)){
+                        closest = goal.get(i);
+                    }
+                }
+            }
+            goal.remove(closest);
+            goal.add(0, closest);
         }
         closed_list.add(current.square);
         
         tracePath(closed_list.get(closed_list.size()-1), parent_list);
+
+        // for(int i = 0; i < open_list.size(); i++){
+        // System.out.println(current.toString());
+        // }
         
     }
 
@@ -199,6 +206,21 @@ class Maze {
         System.out.println("MULTIPLE");
        
         while(!goal.isEmpty()){
+            // Tile closest = goal.get(0);
+            // for(int i = 1; i < goal.size(); i++){
+            //     if(heuristics){
+            //         if(start.get_manhattan_dist(goal.get(i)) < start.get_manhattan_dist(closest)){
+            //             closest = goal.get(i);
+            //         }
+            //     }
+            //     else{
+            //         if(start.get_straight_dist(goal.get(i)) < start.get_straight_dist(closest)){
+            //             closest = goal.get(i);
+            //         }
+            //     }
+            // }
+            // goal.remove(closest);
+            // goal.add(0, closest);
             closed_list = new ArrayList();            
             single_goal(heuristics, new ArrayList(), closed_list, parent_list, null);
             start = goal.remove(0);
@@ -244,9 +266,11 @@ class Maze {
     }
     
     private void tracePath(Tile current, ArrayList<ParentListEntry> parent_list) {
+        int count = -1;
         while(current!=null){
             for(int i = 0; i < parent_list.size(); i++){
                 if(current.equals(parent_list.get(i).square)) {
+                    count++;
                     for(int j = 0; j < this.maze.length; j++) {
                         for(int k = 0; k < this.maze[j].length; k++) {
                             if(current.equals(this.maze[j][k])) {
@@ -259,7 +283,7 @@ class Maze {
                 }
             }
         }
-
+        System.out.println(count);
     }
     
     private static OpenListEntry searchOpenList(ArrayList<OpenListEntry> arr, Tile tile) {
