@@ -16,9 +16,9 @@ import java.util.ArrayList;
  * @author TRISHA NICOLE
  */
 public class CMSC170MachineProblem {
-    // private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\trickySearch.lay.txt";
+     private static final String TEXT_FILE = "C:\\Users\\TRISHA NICOLE\\Desktop\\Mazes\\smallSearch.lay.txt";
     // private static final String TEXT_FILE = "C:\\Users\\User\\Documents\\CMSC 170\\Machine Problems\\Machine Problem 1\\Mazes\\trickySearch.lay.txt";
-    private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\mediumSearch.lay.txt"; //<- Celine
+//    private static final String TEXT_FILE = "D:\\College\\4thyear-1stsem\\CMSC 170\\Mazes\\mediumSearch.lay.txt"; //<- Celine
 
     public static void main(String[] args) {
         Maze maze = new Maze(TEXT_FILE);
@@ -206,21 +206,21 @@ class Maze {
         System.out.println("MULTIPLE");
        
         while(!goal.isEmpty()){
-            // Tile closest = goal.get(0);
-            // for(int i = 1; i < goal.size(); i++){
-            //     if(heuristics){
-            //         if(start.get_manhattan_dist(goal.get(i)) < start.get_manhattan_dist(closest)){
-            //             closest = goal.get(i);
-            //         }
-            //     }
-            //     else{
-            //         if(start.get_straight_dist(goal.get(i)) < start.get_straight_dist(closest)){
-            //             closest = goal.get(i);
-            //         }
-            //     }
-            // }
-            // goal.remove(closest);
-            // goal.add(0, closest);
+             Tile closest = goal.get(0);
+             for(int i = 1; i < goal.size(); i++){
+                 if(heuristics){
+                     if(start.get_manhattan_dist(goal.get(i)) < start.get_manhattan_dist(closest)){
+                         closest = goal.get(i);
+                     }
+                 }
+                 else{
+                     if(start.get_straight_dist(goal.get(i)) < start.get_straight_dist(closest)){
+                         closest = goal.get(i);
+                     }
+                 }
+             }
+             goal.remove(closest);
+             goal.add(0, closest);
             closed_list = new ArrayList();            
             single_goal(heuristics, new ArrayList(), closed_list, parent_list, null);
             start = goal.remove(0);
